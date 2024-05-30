@@ -11,7 +11,13 @@ import com.example.project136.Domains.CategoryDomain
 import com.example.project136.Domains.PopularDomain
 import com.example.project136.R
 import android.util.Log
+import android.view.LayoutInflater
 import android.widget.ImageView
+import android.view.View
+import android.widget.PopupWindow
+import android.widget.TextView
+import android.view.ViewGroup
+import android.view.Gravity
 
 
 class MainActivity : AppCompatActivity() {
@@ -19,6 +25,7 @@ class MainActivity : AppCompatActivity() {
     private var adapterCat: RecyclerView.Adapter<*>? = null
     private var recyclerViewPopular: RecyclerView? = null
     private var recyclerViewCategory: RecyclerView? = null
+    private lateinit var settingBar: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,14 +42,46 @@ class MainActivity : AppCompatActivity() {
 
         // edit profile
         setContentView(R.layout.activity_main)
+        recyclerViewPopular = findViewById(R.id.view_pop)
         initRecyclerView()
 
         val profileImageView = findViewById<ImageView>(R.id.profile)
         profileImageView.setOnClickListener {
             startActivity(Intent(this, EditProfile::class.java))
+        }
 
+        settingBar = findViewById<ImageView>(R.id.settingbar)
+        settingBar.setOnClickListener {
+            showPopupWindow(it)
         }
     }
+
+    private fun showPopupWindow(view: View) {
+        val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val popupView = inflater.inflate(R.layout.mainpopup, null)
+
+        val popupWindow = PopupWindow(popupView,
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            true)
+
+        val closeButton: TextView = popupView.findViewById(R.id.popupclose)
+        closeButton.setOnClickListener {
+            popupWindow.dismiss()
+        }
+
+        // Get the root view of the activity
+        val rootView = findViewById<View>(android.R.id.content)
+
+        // Calculate the center coordinates of the screen
+        val centerX = rootView.width / 2
+        val centerY = rootView.height / 2
+
+        // Set the popup window to appear in the middle of the screen
+        popupWindow.showAtLocation(rootView, Gravity.CENTER, centerX, centerY)
+    }
+    
+
 
     private fun initRecyclerView() {
         val items = ArrayList<PopularDomain>()
